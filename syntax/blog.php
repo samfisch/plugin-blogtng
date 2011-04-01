@@ -122,7 +122,10 @@ class syntax_plugin_blogtng_blog extends DokuWiki_Syntax_Plugin {
     function render($mode, &$renderer, $data) {
         if($mode != 'xhtml') return false;
 
-        $this->entryhelper =& plugin_load('helper', 'blogtng_entry');
+        // very cheap autoloading 
+        if( !$this->entryhelper =& plugin_load('helper', 'blogtng_entry_'.$data['conf']['blog'][0] ))
+            $this->entryhelper =& plugin_load('helper', 'blogtng_entry');
+
         $this->tools =& plugin_load('helper', 'blogtng_tools');
 
         // set target if not set yet
