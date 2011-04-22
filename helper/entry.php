@@ -655,6 +655,8 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
         $blog_query = '(blog = '.
                       $this->sqlitehelper->quote_and_join($conf['blog'],
                                                           ' OR blog = ').')';
+        $blog_query.= $this->get_posts_filter( $conf );
+
         $tag_query = $tag_table = "";
         if(count($conf['tags'])){
             $tag_query  = ' AND (tag = '.
@@ -674,6 +676,20 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
 
         $resid = $this->sqlitehelper->query($query);
         return $this->sqlitehelper->res2arr($resid);
+    }
+
+    function get_posts_filter( $conf ) {
+        $blog_query = '';
+        if( isset( $conf['filter'] )) {
+            foreach( $conf['filter'] as $i => $f ) {
+                switch( $f ) {
+                  case 'upcoming':
+                    $blog_query.= ' AND created > '.time( );
+                    break;
+                }
+            }
+        }
+        return $blog_query;
     }
 
     /**
