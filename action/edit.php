@@ -37,6 +37,19 @@ class action_plugin_blogtng_edit extends DokuWiki_Action_Plugin{
     function handle_editform_output(&$event, $param) {
         global $ID;
 
+        $ns_flags = array( 
+            'news' => array( ),
+            'mixtapes:upload' => array( ),
+            );
+        //
+        // namespace hack
+        if( count( $ns_flags )) {
+            $opts = array( );
+            foreach( $ns_flags as $ns => $deff ) {
+                if( strpos( $ID, $ns.':' ) === 0 ) { $opts[] = $deff; }
+            }
+            if( !count( $opts )) return;
+        }
         $pos = $event->data->findElementByAttribute('type','submit');
         if(!$pos) return; // no submit button found, source view
         $pos -= 1;
@@ -50,7 +63,7 @@ class action_plugin_blogtng_edit extends DokuWiki_Action_Plugin{
         $event->data->insertElement($pos, form_openfieldset(array('_legend' => 'BlogTNG', 'class' => 'edit', 'id' => 'blogtng__edit')));
         $pos += 1;
 
-        $event->data->insertElement($pos, form_makeMenuField('btng[post][blog]', $blogs, $blog, 'Blog', 'blogtng__blog', 'edit'));
+        $event->data->insertElement($pos, form_makeMenuField('btng[post][blog]', $blogs, $blog, 'Blog', 'blogtng__blog', 'blogtng__blog'));
         $pos += 1;
 
         $this->taghelper->load($pid);
@@ -66,7 +79,7 @@ class action_plugin_blogtng_edit extends DokuWiki_Action_Plugin{
             }
             $event->data->insertElement($pos++, form_makeCloseTag('div'));
         } else {
-            $event->data->insertElement($pos, form_makeTextField('btng[post][tags]', join(', ', $tags), 'Tags', 'blogtng__tags', 'edit'));
+            $event->data->insertElement($pos, form_makeTextField('btng[post][tags]', join(', ', $tags), 'Tags', 'blogtng__tags', 'blogtng__tags'));
             $pos += 1;
         }
 
@@ -108,7 +121,7 @@ class action_plugin_blogtng_edit extends DokuWiki_Action_Plugin{
             $pos += 1;
         }
 
-        $event->data->insertElement($pos, form_makeMenuField('btng[post][commentstatus]', array('enabled', 'closed', 'disabled'), $this->entryhelper->entry['commentstatus'], $this->getLang('commentstatus'), 'blogtng__commentstatus', 'edit'));
+        $event->data->insertElement($pos, form_makeMenuField('btng[post][commentstatus]', array('enabled', 'closed', 'disabled'), $this->entryhelper->entry['commentstatus'], $this->getLang('commentstatus'), 'blogtng__commentstatus', 'blogtng__commentstatus'));
         $pos += 1;
 
         $event->data->insertElement($pos, form_closefieldset());

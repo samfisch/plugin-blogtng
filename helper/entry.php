@@ -128,6 +128,7 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
             'author' => null,
             'login' => null,
             'mail' => null,
+            'commentstatus' => 'disabled',
         );
     }
 
@@ -370,6 +371,7 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
         $form->addElement(form_makeButton('submit', null, $this->getLang('create')));
         $form->addHidden('btng[new][format]', hsc($conf['format']));
         $form->addHidden('btng[post][blog]', hsc($conf['blog'][0]));
+        $form->addHidden('sectok', getSecurityToken());
 
         return '<div class="blogtng_newform">' . $form->getForm() . '</div>';
     }
@@ -684,7 +686,8 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
             foreach( $conf['filter'] as $i => $f ) {
                 switch( $f ) {
                   case 'upcoming':
-                    $blog_query.= ' AND created > '.time( );
+                    $upcoming = time( ) - 42 * 60 * 60;
+                    $blog_query.= ' AND created > '.$upcoming;
                     break;
                 }
             }
