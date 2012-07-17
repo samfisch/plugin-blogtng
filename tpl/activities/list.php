@@ -10,11 +10,27 @@
  * on tags and comments.
  */
 ?>
+<style type="text/css">
+/* lol, style per entry, dont try @home */
+div.dokuwiki .activities h1, 
+div.dokuwiki .activites h2, 
+div.dokuwiki .activities h3 {
+  clear: none;
+  font-size: 90%;
+}
+div.dokuwiki .page div.activities {
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  width: 60%;
+}
+div.dokuwiki .page div.activities .blogtng_footer {
+  border-top: none;
+  font-size: 90%;
+}
+</style>
 <div class="blogtng_list activities">
-<p>
 <a href="<?php $entry->tpl_link()?>" class="wikilink1 blogtng_permalink"><?php $entry->tpl_title()?></a> --
 <? $entry->tpl_entry(true, 'syntax', true, true ); ?>
-</p>
 <div class="blogtng_footer level1">
     <?php $entry->tpl_lastmodified('%Y-%m-%d %H:%M')?>
     &middot;
