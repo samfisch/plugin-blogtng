@@ -121,7 +121,7 @@ class action_plugin_blogtng_edit extends DokuWiki_Action_Plugin{
             $pos += 1;
         }
 
-        $event->data->insertElement($pos, form_makeMenuField('btng[post][commentstatus]', array('enabled', 'closed', 'disabled'), $this->entryhelper->entry['commentstatus'], $this->getLang('commentstatus'), 'blogtng__commentstatus', 'blogtng__commentstatus'));
+        $event->data->insertElement($pos, form_makeMenuField('btng[post][commentstatus]', array('disabled', 'enabled', 'closed'), $this->entryhelper->entry['commentstatus'], $this->getLang('commentstatus'), 'blogtng__commentstatus', 'blogtng__commentstatus'));
         $pos += 1;
 
         $event->data->insertElement($pos, form_closefieldset());
