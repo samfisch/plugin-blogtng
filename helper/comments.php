@@ -374,7 +374,7 @@ class helper_plugin_blogtng_comments extends DokuWiki_Plugin {
         $form->addHidden('id', $page);
         $form->addHidden('btng[comment][source]', 'comment');
 
-        foreach(array('name', 'mail', 'web') as $field) {
+        foreach(array('name', 'web') as $field) {
             $attr = ($BLOGTNG['comment_submit_errors'][$field]) ?  array('class' => 'edit error') : array();
 
             if($field == 'web' && !$this->getConf('comments_allow_web')) {
@@ -621,7 +621,7 @@ class blogtng_comment{
     }
 
     function tpl_mail(){
-        echo hsc($this->data['mail']);
+        #echo hsc($this->data['mail']);
     }
 
     function tpl_web(){
@@ -642,18 +642,6 @@ class blogtng_comment{
         if($this->data['avatar']) {
             $img = $this->data['avatar'];
             //FIXME add hook for additional methods
-        } elseif ($this->data['mail']) {
-            $dfl = $conf['plugin']['blogtng']['comments_gravatar_default'];
-            if(!isset($dfl) || $dfl == 'blank') $dfl = DOKU_URL . 'lib/images/blank.gif';
-
-            $img = 'http://gravatar.com/avatar.php'
-                 . '?gravatar_id=' . md5($this->data['mail'])
-                 . '&size=' . $w
-                 . '&rating=' . $conf['plugin']['blogtng']['comments_gravatar_rating']
-                 . '&default='.rawurlencode($dfl)
-                 . '&.png';
-        } elseif ($this->data['web']){
-            $img = 'http://getfavicon.appspot.com/'.rawurlencode($this->data['web']).'?.png';
         }
 
 
