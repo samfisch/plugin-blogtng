@@ -78,6 +78,10 @@ class action_plugin_blogtng_feed extends DokuWiki_Action_Plugin{
         $conf = array_merge($conf, $this->defaultConf);
         $posts = $this->entryhelper->get_posts($conf);
         foreach ($posts as $row) {
+            if( auth_quickaclcheck( $row['id'] ) < AUTH_READ ) {
+                continue;
+            }
+
             $event->data['data'][] = array(
                 'id' => $row['page'],
                 'date' => $row['created'],

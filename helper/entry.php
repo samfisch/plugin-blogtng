@@ -134,6 +134,7 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
             'author' => null,
             'login' => null,
             'mail' => null,
+            'commentstatus' => 'disabled',
         );
     }
 
@@ -376,6 +377,7 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
         $form->addElement(form_makeButton('submit', null, $this->getLang('create')));
         $form->addHidden('btng[new][format]', hsc($conf['format']));
         $form->addHidden('btng[post][blog]', hsc($conf['blog'][0]));
+        $form->addHidden('sectok', getSecurityToken());
 
         return '<div class="blogtng_newform">' . $form->getForm() . '</div>';
     }
@@ -661,6 +663,8 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
         $blog_query = '(blog = '.
                       $this->sqlitehelper->quote_and_join($conf['blog'],
                                                           ' OR blog = ').')';
+        $blog_query.= $this->get_posts_filter( $conf );
+
         $tag_query = $tag_table = "";
         if(count($conf['tags'])){
             $tag_query  = ' AND (tag = '.
@@ -680,6 +684,21 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
 
         $resid = $this->sqlitehelper->query($query);
         return $this->sqlitehelper->res2arr($resid);
+    }
+
+    function get_posts_filter( $conf ) {
+        $blog_query = '';
+        if( isset( $conf['filter'] )) {
+            foreach( $conf['filter'] as $i => $f ) {
+                switch( $f ) {
+                  case 'upcoming':
+                    $upcoming = time( ) - 42 * 60 * 60;
+                    $blog_query.= ' AND created > '.$upcoming;
+                    break;
+                }
+            }
+        }
+        return $blog_query;
     }
 
     /**

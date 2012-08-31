@@ -9,14 +9,12 @@
  * This example shows only entry abstracts with comment numbers
  */
 ?>
-<h1>
-<?php $entry->tpl_title()?>
-&nbsp;&middot;
-<?php $entry->tpl_commentcount('(%d Comments)','(%d Comment)', '(%d Comments)', false)?>
-</h1>
-
+<div class="blogtng_list_short">
+<h3>
+<a href="<?php $entry->tpl_link( )?>"><?php $entry->tpl_created( '%d %m - ' ) ?><?php $entry->tpl_title( ) ?></a>
+</h3>
 <p>
-<?php $entry->tpl_abstract(50)?><br />
-<?php $entry->tpl_permalink('read more…')?>
+<?php $entry->tpl_abstract(100)?><br />
 </p>
+</div>
 
