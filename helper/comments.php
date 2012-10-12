@@ -261,13 +261,13 @@ class helper_plugin_blogtng_comments extends DokuWiki_Plugin {
      *
      * @param string $pid  - entry to subscribe
      * @param string $mail - email of subscriber
-     * @param int $optin - set to 1 for immediate optin
      */
-    function subscribe($pid, $mail, $optin=-3) {
+    function subscribe($pid, $mail) {
         // add to subscription list
         $sql = "INSERT OR IGNORE INTO subscriptions
                       (pid, mail) VALUES (?,?)";
         $this->sqlitehelper->query($sql,$pid,strtolower($mail));
+        $optin = $this->getConf('subscribe_noconfirm');
 
         // add to optin list
         if($optin == 1){
@@ -283,10 +283,8 @@ class helper_plugin_blogtng_comments extends DokuWiki_Plugin {
             $sql = "SELECT optin, key FROM optin WHERE mail = ?";
             $res = $this->sqlitehelper->query($sql,strtolower($mail));
             $row = $this->sqlitehelper->res2row($res,0);
-            if($row['optin'] < 0){
+            if($row['optin'] == 0){
                 $this->send_optin_mail($mail,$row['key']);
-                $sql = "UPDATE optin SET optin = optin+1 WHERE mail = ?";
-                $this->sqlitehelper->query($sql,strtolower($mail));
             }
         }
 
@@ -556,15 +554,18 @@ class blogtng_comment{
     /**
      * Resets the internal data with a given row
      */
+    function blogtng_comment(){
+        $this->tools = new helper_plugin_blogtng_tools();
+    }
+
     function init($row){
         $this->data = $row;
-
     }
 
     function output($name){
         global $INFO;
         $name = preg_replace('/[^a-zA-Z_\-]+/','',$name);
-        $tpl = helper_plugin_blogtng_tools::getTplFile($name, 'comments');
+        $tpl = $this->tools->getTplFile($name,'comments');
         if($tpl === false){
             return false;
         }
@@ -574,6 +575,10 @@ class blogtng_comment{
             $comment->num++;
             include($tpl);
         }
+    }
+
+    function getLang($name){
+        return $this->tools->getLang($name);
     }
 
     function tpl_comment(){
