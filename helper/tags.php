@@ -21,7 +21,12 @@ class helper_plugin_blogtng_tags extends DokuWiki_Plugin {
      * Constructor, loads the sqlite helper plugin
      */
     function helper_plugin_blogtng_tags() {
-        $this->sqlitehelper =& plugin_load('helper', 'blogtng_sqlite');
+        //$this->sqlitehelper =& plugin_load('helper', 'blogtng_sqlite');
+        if ($this->getConf('sqlite_version') == 'SQLite2')
+            $this->sqlitehelper  =& plugin_load('helper', 'blogtng_sqlite');
+        else
+            $this->sqlitehelper  =& plugin_load('helper', 'blogtng_sqlite3');
+
     }
 
     /**
@@ -52,7 +57,7 @@ class helper_plugin_blogtng_tags extends DokuWiki_Plugin {
             msg('blogtng plugin: failed to load tags!', -1);
             $this->tags = array();
         }
-        if (sqlite_num_rows($resid) == 0) {
+        if ($this->sqlitehelper->resRowCount($resid) == 0) {
             $this->tags = array();
         }
 
@@ -68,7 +73,7 @@ class helper_plugin_blogtng_tags extends DokuWiki_Plugin {
      * Load tags for a specified blog
      */
     function load_by_blog($blogs) {
-        $query = 'SELECT DISTINCT tag, A.pid as pid FROM tags A LEFT JOIN entries B ON B.blog IN ("' . implode('","', $blogs) . '")';
+        $query = 'SELECT DISTINCT tag, A.pid as pid FROM tags A, entries B WHERE B.pid = A.pid AND B.blog IN ("' . implode('","', $blogs) . '")';
         $resid = $this->sqlitehelper->query($query);
         if($resid) {
             return $this->sqlitehelper->res2arr($resid);
@@ -121,11 +126,11 @@ class helper_plugin_blogtng_tags extends DokuWiki_Plugin {
         );
         foreach ($tags as $tag) {
             if ($tag{0} == '+') {
-                array_push($tag_clauses['AND'], 'tag = \'' . sqlite_escape_string(substr($tag, 1)) . '\'');
+                array_push($tag_clauses['AND'], 'tag = \'' . $this->sqlitehelper->quote_string(substr($tag, 1)) . '\'');
             } else if ($tag{0} == '-') {
-                array_push($tag_clauses['NOT'], 'tag != \'' . sqlite_escape_string(substr($tag, 1)) . '\'');
+                array_push($tag_clauses['NOT'], 'tag != \'' . $this->sqlitehelper->quote_string(substr($tag, 1)) . '\'');
             } else {
-                array_push($tag_clauses['OR'], 'tag = \'' . sqlite_escape_string($tag) . '\'');
+                array_push($tag_clauses['OR'], 'tag = \'' . $this->sqlitehelper->quote_string($tag) . '\'');
             }
         }
         $tag_clauses = array_map('array_unique', $tag_clauses);

@@ -43,14 +43,16 @@ class action_plugin_blogtng_new extends DokuWiki_Action_Plugin{
             return true;
         }
 
-        $event->preventDefault();
         $new = $tools->mkpostid($tools->getParam('new/format'),$tools->getParam('new/title'));
         if ($ID != $new) {
-            send_redirect(wl($new,array('do'=>'btngnew','btng[post][blog]'=>$tools->getParam('post/blog'), 'btng[new][format]'=>$tools->getParam('new/format'), 'btng[new][title]' => $tools->getParam('new/title')),true,'&'));
+            send_redirect(wl($new,array('do'=>'btngnew','sectok'=>$_REQUEST['sectok'],'btng[post][blog]'=>$tools->getParam('post/blog'), 'btng[new][format]'=>$tools->getParam('new/format'), 'btng[new][title]' => $tools->getParam('new/title')),true,'&'));
             return false; //never reached
         } else {
             $TEXT = $this->_prepare_template($new, $tools->getParam('new/title'));
+
             $event->data = 'preview';
+            $event->preventDefault();
+
             return false;
         }
     }
@@ -59,11 +61,14 @@ class action_plugin_blogtng_new extends DokuWiki_Action_Plugin{
      * Loads the template for a new blog post and does some text replacements
      *
      * @author Gina Haeussge <osd@foosel.net>
+     * @author ai
      */
     function _prepare_template($id, $title) {
-        $tpl = io_readFile(DOKU_PLUGIN . 'blogtng/tpl/newentry.txt');
+        if( !$tpl = pageTemplate($id)) 
+            $tpl = io_readFile(DOKU_PLUGIN . 'blogtng/tpl/newentry.txt');
         $replace = array(
             '@TITLE@' => $title,
+            '@BTNG_TITLE@' => $title,
         );
         $tpl = str_replace(array_keys($replace), array_values($replace), $tpl);
         return $tpl;

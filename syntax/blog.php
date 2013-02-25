@@ -78,6 +78,7 @@ class syntax_plugin_blogtng_blog extends DokuWiki_Syntax_Plugin {
         }
 
         // handle multi keys
+        $conf['filter'] = array_filter(array_map('trim', explode(',', $conf['filter'])));
         $conf['blog'] = array_filter(array_map('trim', explode(',', $conf['blog'])));
         $conf['tags'] = array_filter(array_map('trim', explode(',', $conf['tags'])));
         $conf['type'] = array_filter(array_map('trim', explode(',', $conf['type'])));

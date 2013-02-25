@@ -34,7 +34,12 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
      * @author Michael Klier <chi@chimeric.de>
      */
     function helper_plugin_blogtng_entry() {
-        $this->sqlitehelper =& plugin_load('helper', 'blogtng_sqlite');
+        //$this->sqlitehelper =& plugin_load('helper', 'blogtng_sqlite');
+        if ($this->getConf('sqlite_version') == 'SQLite2')
+            $this->sqlitehelper  =& plugin_load('helper', 'blogtng_sqlite');
+        else
+            $this->sqlitehelper  =& plugin_load('helper', 'blogtng_sqlite3');
+
         $this->entry = $this->prototype();
     }
 
@@ -60,7 +65,7 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
             $this->entry = $this->prototype();
             return self::RET_ERR_DB;
         }
-        if (sqlite_num_rows($resid) == 0) {
+        if ($this->sqlitehelper->resRowCount($resid) == 0) {
             $this->entry = $this->prototype();
             $this->entry['pid'] = $pid;
             return self::RET_ERR_NOENTRY;
@@ -129,6 +134,7 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
             'author' => null,
             'login' => null,
             'mail' => null,
+            'commentstatus' => 'disabled',
         );
     }
 
@@ -297,7 +303,7 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
                    WHERE '.$blog_query.$tag_query;
         $resid = $this->sqlitehelper->query($query);
         if (!$resid) return;
-        $count = sqlite_num_rows($resid);
+        $count = $this->sqlitehelper->resRowCount($resid);
         if($count <= $conf['limit']) return '';
 
         // we now prepare an array of pages to show
@@ -402,6 +408,7 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
         $form->addElement(form_makeButton('submit', null, $this->getLang('create')));
         $form->addHidden('btng[new][format]', hsc($conf['format']));
         $form->addHidden('btng[post][blog]', hsc($conf['blog'][0]));
+        $form->addHidden('sectok', getSecurityToken());
 
         return '<div class="blogtng_newform">' . $form->getForm() . '</div>';
     }
@@ -571,7 +578,7 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
                 ORDER BY cnt DESC, created DESC
                    LIMIT ".(int) $num;
         $res = $this->sqlitehelper->query($query);
-        if(!sqlite_num_rows($res)) return; // no results found
+        if(!$this->sqlitehelper->resRowCount($res)) return; // no results found
         $res = $this->sqlitehelper->res2arr($res);
 
         // now do the output
@@ -684,17 +691,11 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
 
     function get_posts($conf) {
         $sortkey = ($conf['sortby'] == 'random') ? 'Random()' : $conf['sortby'];
-        
-        $blog_query = '';
-        
-        if (count($conf['blog']) > 0) {
-        
-            $blog_query = '(blog = '.
-                          $this->sqlitehelper->quote_and_join($conf['blog'],
-                                                              ' OR blog = ').')';
-                                                              
-        }                                                             
-                                                              
+        $blog_query = '(blog = '.
+                      $this->sqlitehelper->quote_and_join($conf['blog'],
+                                                          ' OR blog = ').')';
+        $blog_query.= $this->get_posts_filter( $conf );
+
         $tag_query = $tag_table = "";
         if(count($conf['tags'])){
             
@@ -723,6 +724,21 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
 
         $resid = $this->sqlitehelper->query($query);
         return $this->sqlitehelper->res2arr($resid);
+    }
+
+    function get_posts_filter( $conf ) {
+        $blog_query = '';
+        if( isset( $conf['filter'] )) {
+            foreach( $conf['filter'] as $i => $f ) {
+                switch( $f ) {
+                  case 'upcoming':
+                    $upcoming = time( ) - 42 * 60 * 60;
+                    $blog_query.= ' AND created > '.$upcoming;
+                    break;
+                }
+            }
+        }
+        return $blog_query;
     }
 
     /**
@@ -818,7 +834,7 @@ class helper_plugin_blogtng_entry extends DokuWiki_Plugin {
                     ORDER BY A.created ' . (($type == 'prev') ? 'DESC' : 'ASC') . '
                        LIMIT 1';
             $res = $this->sqlitehelper->query($query, $pid);
-            if (sqlite_num_rows($res) > 0) {
+            if ($this->sqlitehelper->resRowCount($res) > 0) {
                 $row = $this->sqlitehelper->res2row($res, 0);
                 $related[$type] = $row;
             }
