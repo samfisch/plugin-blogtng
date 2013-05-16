@@ -14,4 +14,5 @@ $meta['comments_xhtml_renderer']  = array(
                                    );
 $meta['editform_set_date']        = array('onoff');
 $meta['tags']                     = array('string');
+$meta['namespaces']               = array('string');
 $meta['sqlite_version'] = array('multichoice', '_choices' => array('SQLite2', 'SQLite3'));

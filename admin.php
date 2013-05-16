@@ -692,8 +692,6 @@ class admin_plugin_blogtng extends DokuWiki_Admin_Plugin {
         $form->addElement(formSecurityToken());
         $form->addElement(form_makeListBoxField('btng[comment][status]', array('visible', 'hidden'), $comment['status'], $this->getLang('comment_status')));
         $form->addElement('<br />');
-        $form->addElement(form_makeListBoxField('btng[comment][source]', array('comment', 'trackback', 'pingback'), $comment['source'], $this->getLang('comment_source')));
-        $form->addElement('<br />');
         $form->addElement(form_makeTextField('btng[comment][name]', $comment['name'], $this->getLang('comment_name')));
         $form->addElement('<br />');
         $form->addElement(form_makeTextField('btng[comment][mail]', $comment['mail'], $this->getLang('comment_mail')));

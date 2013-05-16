@@ -17,3 +17,4 @@ $lang['comments_xhtml_renderer']   = 'Syntax plugins to be renderer in comments 
 $lang['comments_allow_syntax']    = 'Syntax plugins to be allowd in comments (in XHTML or in comment rendition).';
 $lang['editform_set_date']         = 'Allow to set the creation date of a blog entry via the edit form.';
 $lang['tags']                      = 'A comma-separated list of allowed tags. If empty, all tags are allowed.';
+$lang['namespaces']                      = 'A comma-separated list of allowed namespaces. If empty, all namespaces are allowed.';

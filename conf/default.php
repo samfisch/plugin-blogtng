@@ -5,4 +5,5 @@ $conf['comments_allow_syntax']    = '';
 $conf['comments_xhtml_renderer']   = '';
 $conf['editform_set_date']         = 0;
 $conf['tags']                      = '';
+$conf['namespaces']                      = 'blog';
 $conf['sqlite_version']            = 'SQLite3';

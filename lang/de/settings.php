@@ -18,3 +18,4 @@ $lang['comments_xhtml_renderer']   = 'Syntax-Plugins, die in Kommentaren den Def
 $lang['comments_allow_syntax']    = 'Syntax-Plugins, die in Kommentaren erlaubt sind (als XHTML oder in der Kommentar-Ausgabe).';
 $lang['editform_set_date']         = 'Erlaube das Einstellen/Ändern des Erstellungszeitpunkts eines Blog-Eintrags via Editierformular.';
 $lang['tags']                      = 'Kommaseparierte Liste (CSV) erlaubter Tags. Sofern leer sind alle Tags erlaubt.';
+$lang['namespaces']                      = 'Kommaseparierte Liste (CSV) erlaubter Namespaces. Sofern leer sind alle Namespaces erlaubt.';
