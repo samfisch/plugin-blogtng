@@ -37,16 +37,13 @@ class action_plugin_blogtng_edit extends DokuWiki_Action_Plugin{
     function handle_editform_output(&$event, $param) {
         global $ID;
 
-        $ns_flags = array( 
-            'news' => array( ),
-            'mixtapes:upload' => array( ),
-            );
-        //
         // namespace hack
-        if( count( $ns_flags )) {
+        $namespaces = $this->_get_namespaces( );
+        if( count( $namespaces )) {
+
             $opts = array( );
-            foreach( $ns_flags as $ns => $deff ) {
-                if( strpos( $ID, $ns.':' ) === 0 ) { $opts[] = $deff; }
+            foreach( $namespaces as $ns ) {
+                if( strpos( $ID, $ns.':' ) === 0 ) { $opts[] = array( ); }
             }
             if( !count( $opts )) return;
         }
@@ -206,6 +203,9 @@ class action_plugin_blogtng_edit extends DokuWiki_Action_Plugin{
         return array_filter(preg_split('/\s*,\s*/', $tags));
     }
 
+    function _get_namespaces() {
+        return $this->_split_tags($this->getConf('namespaces'));
+    }
     function _get_allowed_tags() {
         return $this->_split_tags($this->getConf('tags'));
     }
